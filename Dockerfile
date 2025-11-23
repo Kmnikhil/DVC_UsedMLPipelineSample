@@ -17,8 +17,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy entire project
 COPY . .
 
-# Pull data & models from DVC remote
-RUN dvc pull
-
 # Default command: run the ML pipeline
 CMD ["dvc", "repro"]
