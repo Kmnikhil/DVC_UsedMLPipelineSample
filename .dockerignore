@@ -1,0 +1,28 @@
+# Python junk
+__pycache__/
+*.pyc
+*.pyo
+
+# Notebooks junk
+.ipynb_checkpoints/
+
+# Large data and models
+data/
+datasets/
+models/
+checkpoints/
+
+# DVC cache
+.dvc/cache/
+
+# Environment files
+.env
+*.env
+
+# IDE junk
+.vscode/
+.idea/
+
+# Git data
+.git/
+.gitignore
