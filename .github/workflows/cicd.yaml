@@ -1,0 +1,65 @@
+name: CI/CD for ML
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  # ---------------------------
+  # TEST JOB (CI)
+  # ---------------------------
+  build-and-track:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flask pytest
+
+      - name: DVC run
+        run: dvc repro
+
+
+  # ---------------------------
+  # BUILD & PUSH TO DOCKER HUB (CD)
+  # Runs only if tests pass
+  # ---------------------------
+  build-and-deploy:
+    needs: build-and-track     # ensures deployment waits for tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./DockerFile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/flasktest-app:latest
+
+      - name: Print image digest
+        run: echo ${{ steps.build-and-publish.outputs.digest }}
