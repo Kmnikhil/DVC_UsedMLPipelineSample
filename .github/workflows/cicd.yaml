@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flask pytest
+          pip install -r requirements.txt
 
       - name: DVC run
         run: dvc repro
